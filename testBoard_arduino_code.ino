@@ -1,7 +1,7 @@
 #define lockPin 2
 String inputString = "";         // A string to hold incoming data
 String cmd;
-int ledPins[] = {3, 5, 6, 8, 9, 10}; // Your array of pins
+int ledPins[] = {3, 5, 6, 9, 10, 11}; // Your array of pins
 int pinCount = 6;               // Number of LEDs
 
 void setup() {
@@ -34,7 +34,7 @@ void executeCommand(String cmd) {
   if (cmd == "LED_ON") {
     // Turning them all HIGH at once
   for (int i = 0; i < pinCount; i++) {
-    digitalWrite(ledPins[i], HIGH);
+    analogWrite(ledPin, 138);
   }
   } 
   else if (cmd == "LED_OFF") {
