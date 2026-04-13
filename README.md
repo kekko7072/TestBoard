@@ -13,14 +13,14 @@ A hardware testing platform for controlling LEDs and a lock mechanism via an Ard
 
 ## Software Requirements
 
-- Python 3.9 or later
+- Python 3.9 or later (see macOS note below)
 - Arduino IDE (to flash the firmware)
 
 ---
 
 ## Project Structure
 
-```
+```text
 TestBoard/
 ├── .github/
 │   └── workflows/
@@ -45,14 +45,31 @@ Open `firmware/firmware.ino` in the Arduino IDE, select your board and port, and
 
 ### 2. Set up the Python environment
 
+**macOS only — install Tk support first:**
+
+Homebrew's Python does not bundle Tk. Install it before creating the venv,
+making sure the version matches your Python (`python3 --version`):
+
 ```bash
-# Create and activate a virtual environment
+brew install python-tk@3.14   # replace 3.14 with your actual version
+```
+
+If you already created a venv without doing this, delete it and start fresh:
+
+```bash
+rm -rf .venv
+```
+
+**All platforms — create the venv and install dependencies:**
+
+```bash
+# Create the virtual environment
 python3 -m venv .venv
 
-# macOS / Linux
+# Activate it:
+#   macOS / Linux:
 source .venv/bin/activate
-
-# Windows
+#   Windows:
 .venv\Scripts\activate
 
 # Install dependencies
@@ -65,7 +82,7 @@ pip install -r requirements.txt
 # With the venv active:
 python app.py
 
-# Or directly via VS Code: open the project and press F5 (uses .vscode/launch.json)
+# Or in VS Code: open the project and press F5 (uses .vscode/launch.json)
 ```
 
 ---
@@ -89,11 +106,13 @@ python app.py
 ## Platform Notes
 
 ### macOS
-- If your port does not appear, install the USB-Serial driver for your Arduino clone (e.g. CH340/CH341 chips used on many Nano clones require a separate driver).
+
+- If your port does not appear, install the USB-Serial driver for your Arduino clone (CH340/CH341 chips used on many Nano clones require a separate driver).
 - You may need to grant Terminal or VS Code access to serial devices under **System Settings → Privacy & Security**.
 - Runs natively on Apple Silicon — no Rosetta needed.
 
 ### Windows
+
 - A pre-built executable is available as a CI artifact from the GitHub Actions **Build** workflow (no Python required).
 - If the port is not detected, check **Device Manager** to confirm the Arduino is recognised and note its COM port number.
 
@@ -118,10 +137,10 @@ Baud rate: **9600**
 
 Every push to `main` triggers three GitHub Actions jobs:
 
-| Job | Runner | Output |
-|-----|--------|--------|
-| Build macOS App | `macos-latest` | `TestBoard.app` (artifact) |
-| Build Windows Executable | `windows-latest` | `TestBoard.exe` (artifact) |
-| Verify Arduino Sketch | `ubuntu-latest` | Compilation check only |
+| Job                      | Runner           | Output                    |
+| ------------------------ | ---------------- | ------------------------- |
+| Build macOS App          | `macos-latest`   | `TestBoard.app` (artifact)|
+| Build Windows Executable | `windows-latest` | `TestBoard.exe` (artifact)|
+| Verify Arduino Sketch    | `ubuntu-latest`  | Compilation check only    |
 
 Artifacts are available for download from the **Actions** tab on GitHub.
