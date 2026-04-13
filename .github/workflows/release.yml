@@ -1,0 +1,78 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+
+  # ── macOS ─────────────────────────────────────────────────────────────────
+  release-macos:
+    name: Release macOS App
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install --upgrade pip
+          .venv/bin/pip install -r requirements.txt pyinstaller
+
+      - name: Build macOS app
+        run: |
+          .venv/bin/pyinstaller --onefile --windowed \
+            --collect-all customtkinter \
+            --distpath build \
+            --workpath /tmp/pyinstaller-build \
+            --name QCSlotTester \
+            app.py
+
+      - name: Zip app bundle
+        run: zip -r build/QCSlotTester-macOS.zip build/QCSlotTester.app
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/QCSlotTester-macOS.zip
+          generate_release_notes: true
+
+  # ── Windows ───────────────────────────────────────────────────────────────
+  release-windows:
+    name: Release Windows Executable
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m venv .venv
+          .venv\Scripts\pip.exe install --upgrade pip
+          .venv\Scripts\pip.exe install -r requirements.txt pyinstaller
+
+      - name: Build Windows executable
+        run: |
+          .venv\Scripts\pyinstaller.exe --onefile --windowed `
+            --collect-all customtkinter `
+            --distpath build `
+            --workpath C:\Temp\pyinstaller-build `
+            --name QCSlotTester `
+            app.py
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/QCSlotTester.exe
+          generate_release_notes: true
